@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DEPS_DIR=${DEPS_PATH}
 opencv_version=4.1.2
 SUDO=$1

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DEPS_DIR=${DEPS_PATH}
 MKL_URL=https://github.com/intel/mkl-dnn/releases/download/v0.19/mklml_lnx_2019.0.5.20190502.tgz
 MKL_VERSION=mklml_lnx_2019.0.5.20190502
@@ -11,7 +13,8 @@ if [ "$SUDO" == "" ];then
 fi
 
 # install mkl 2019.0.5.20190502
-$SUDO apt-get update && $SUDO apt-get install -y wget
+# $SUDO apt-get update && $SUDO apt-get install -y wget git
+
 cd $DEPS_DIR
 wget -t 3 -c ${MKL_URL} &&\
   tar -xvf ${MKL_VERSION}.tgz &&\
@@ -41,7 +44,7 @@ if [ $(cmake --version|grep "version"|awk '{print $3}') != "3.14.3"  ];then
 fi
 #install openvino 2019_R3.1
 cd $DEPS_DIR
-$SUDO apt-get update && $SUDO apt-get install -y git
+
 git clone --depth 1 https://github.com/openvinotoolkit/openvino -b ${OPENVINO_VERSION}
 cd $DEPS_DIR/openvino/inference-engine
 git submodule update --init --recursive &&\
@@ -56,6 +59,9 @@ mkdir -p build && cd build &&\
   -DENABLE_CLDNN=ON \
   -DENABLE_OPENCV=OFF \
   ..
+
+# -D_GLIBCXX_USE_CXX11_ABI=0 \
+
 cd $DEPS_DIR/openvino/inference-engine/build
 make -j8
 
@@ -65,4 +71,6 @@ $SUDO mkdir -p /usr/share/InferenceEngine &&\
   $SUDO cp targets.cmake /usr/share/InferenceEngine &&\
   echo `pwd`/../bin/intel64/Release/lib | $SUDO tee -a /etc/ld.so.conf.d/openvino.conf &&\
   $SUDO ldconfig
+
+$SUDO mkdir -p /opt/openvino_toolkit
 $SUDO ln -sf $DEPS_DIR/openvino /opt/openvino_toolkit/openvino
