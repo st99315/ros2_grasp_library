@@ -80,13 +80,12 @@ COPY ./script/ros_entrypoint.sh /root/script/ros_entrypoint.sh
 
 WORKDIR /root
 
-RUN echo "source /opt/ros/dashing/setup.bash" >> $HOME/.bashrc && \
-    echo "source /root/ros2_ws/install/setup.bash" >> $HOME/.bashrc && \
-    echo "export CPU_EXTENSION_LIB=/opt/openvino_toolkit/openvino/inference-engine/bin/intel64/Release/lib/libcpu_extension.so" >> $HOME/.bashrc && \
-    echo "export InferenceEngine_DIR=/opt/openvino_toolkit/openvino/inference-engine/build" >> $HOME/.bashrc && \
-    # echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$InferenceEngine_DIR/../bin/intel64/Release/lib:/usr/local/lib/mklml/lib" >> $HOME/.bashrc
-    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/mklml/lib" >> $HOME/.bashrc
+RUN echo "export CPU_EXTENSION_LIB=/opt/openvino_toolkit/openvino/inference-engine/bin/intel64/Release/lib/libcpu_extension.so" >> $HOME/.bashrc && \
+    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/mklml/lib" >> $HOME/.bashrc && \
+    echo "source /opt/ros/dashing/setup.bash" >> $HOME/.bashrc && \
+    echo "source /root/ros2_ws/install/setup.bash" >> $HOME/.bashrc
 
 # on container initailize only
-ENTRYPOINT ["/root/script/ros_entrypoint.sh"]
+# ENTRYPOINT ["/root/script/ros_entrypoint.sh"]
+
 CMD ["bash"]
