@@ -343,10 +343,14 @@ class HandEyeCalibration(Plugin):
 
     self.publish_tf_transform(static_transformStamped)
 
-    output_string = "camera-robot pose:\n"
-    output_string += "  Translation: [{}, {}, {}]\n".format(bTc[0,3], bTc[1,3], bTc[2,3])
-    output_string += "  Rotation: in Quaternion [{}, {}, {}, {}]".format(q[0], q[1], q[2], q[3])
+    output_string = "robot2vision:\n"
+    output_string += "  from: {}\n".format(from_frame)
+    output_string += "  to: {}\n".format(to_frame)
+    output_string += "  transform:\n"
+    output_string += "    translation: [{}, {}, {}]\n".format(bTc[0,3], bTc[1,3], bTc[2,3])
+    output_string += "    rotation: [{}, {}, {}, {}]\n".format(q[1], q[2], q[3], q[0])
     file_path = '/tmp/' + 'camera-robot.txt'
+
     with open(file_path, 'w') as f:
       f.write(output_string)
 
