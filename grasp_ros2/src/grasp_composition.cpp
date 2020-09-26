@@ -31,14 +31,13 @@ int main(int argc, char ** argv)
   auto detect_node = std::make_shared<GraspDetectorGPD>(
     rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
   exec.add_node(detect_node);
+
   GraspDetectorBase * grasp_detector = dynamic_cast<GraspDetectorBase *>(detect_node.get());
   auto plan_node = std::make_shared<GraspPlanner>(
     rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true), grasp_detector);
   exec.add_node(plan_node);
   exec.spin();
 
-  detect_node = nullptr;
-  plan_node = nullptr;
   rclcpp::shutdown();
   return 0;
 }

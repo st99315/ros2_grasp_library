@@ -54,11 +54,9 @@ GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
   sub1_opt.callback_group = callback_group_subscriber1_;
 
   auto callback = [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
-      this->cloud_callback(msg);
-    };
-  cloud_sub_ =
-    this->create_subscription<sensor_msgs::msg::PointCloud2>(cloud_topic,
-      rclcpp::QoS(10), callback, sub1_opt);
+      this->cloud_callback(msg); };
+  cloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+      cloud_topic, rclcpp::QoS(10), callback, sub1_opt);
 
   grasps_pub_ = this->create_publisher<grasp_msgs::msg::GraspConfigList>(
     Consts::kTopicDetectedGrasps, 10);
@@ -96,7 +94,7 @@ GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
 
 void GraspDetectorGPD::onInit()
 {
-  rclcpp::Rate rate(100);
+  rclcpp::Rate rate(60);
   RCLCPP_INFO(logger_, "Waiting for point cloud to arrive ...");
 
   while (rclcpp::ok()) {

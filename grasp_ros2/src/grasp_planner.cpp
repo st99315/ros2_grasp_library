@@ -38,13 +38,15 @@ GraspPlanner::GraspPlanner(const rclcpp::NodeOptions & options, GraspDetectorBas
   GraspCallback(), tfBroadcaster_(this), grasp_detector_(grasp_detector)
 {
   ROSParameters::getPlanningParams(this, param_);
+
   callback_group_subscriber3_ = this->create_callback_group(
     rclcpp::callback_group::CallbackGroupType::MutuallyExclusive);
+
   auto service = [this](const std::shared_ptr<rmw_request_id_t> request_header,
       const std::shared_ptr<GraspPlanning::Request> req,
       const std::shared_ptr<GraspPlanning::Response> res) -> void {
-      this->grasp_service(request_header, req, res);
-    };
+        this->grasp_service(request_header, req, res);
+      };
   grasp_srv_ = this->create_service<GraspPlanning>("plan_grasps", service, rmw_qos_profile_default,
       callback_group_subscriber3_);
 
@@ -60,13 +62,16 @@ void GraspPlanner::grasp_callback(const grasp_msgs::msg::GraspConfigList::Shared
   RCLCPP_INFO(logger_, "Received grasp callback");
   rclcpp::Time rclcpp_time = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME)->now() +
     rclcpp::Duration(6, 0);
+
+  // msg->header.frame_id is same as cloud
   static bool tf_needed = (param_.grasp_frame_id_ != msg->header.frame_id);
   RCLCPP_INFO(logger_, "tf_needed %d", tf_needed);
+
   std_msgs::msg::Header header;
   header.frame_id = tf_needed ? param_.grasp_frame_id_ : msg->header.frame_id;
   header.stamp = msg->header.stamp;
-  grasp_msgs::msg::GraspConfig to_grasp;
 
+  grasp_msgs::msg::GraspConfig to_grasp;
   for (auto from_grasp : msg->grasps) {
     // skip low score grasp
     if (from_grasp.score.data < param_.grasp_score_threshold_) {
@@ -229,13 +234,18 @@ void GraspPlanner::grasp_service(
 
   {
     std::unique_lock<std::mutex> lock(m_);
+    RCLCPP_WARN(logger_, "Grasp Planning lock to clear");
     moveit_grasps_.clear();
     grasp_detector_->start(req->target.id);
   }
+
+  RCLCPP_WARN(logger_, "waiting moveit_grasps_");
   // blocking till grasps found
   while (moveit_grasps_.empty()) {
     rclcpp::Rate(20).sleep();
   }
+  RCLCPP_WARN(logger_, "moveit_grasps_ has grasp");
+
   grasp_detector_->stop();
   res->grasps = moveit_grasps_;
 

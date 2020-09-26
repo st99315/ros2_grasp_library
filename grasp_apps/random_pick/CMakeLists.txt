@@ -70,8 +70,15 @@ target_link_libraries(${PROJECT_NAME}
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin
 )
+
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install launch files.
+install(DIRECTORY
+  cfg launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 # Flags
