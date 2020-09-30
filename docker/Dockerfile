@@ -88,4 +88,39 @@ RUN echo "export CPU_EXTENSION_LIB=/opt/openvino_toolkit/openvino/inference-engi
 # on container initailize only
 # ENTRYPOINT ["/root/script/ros_entrypoint.sh"]
 
+# TODO:
+# these are for gpu viz
+RUN apt-get update && apt-get -y --no-install-recommends install \
+    apt-utils \
+    software-properties-common \
+    build-essential \
+    cmake \
+    git \
+    python3-pip \
+    libxext6 \
+    libx11-6 \
+    libglvnd0 \
+    libgl1 \
+    libglx0 \
+    libegl1 \
+    freeglut3-dev
+
+ENV DISPLAY :0
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+ENV TERM=xterm
+# Some QT-Apps don't show controls without this
+ENV QT_X11_NO_MITSHM 1
+
 CMD ["bash"]
+
+
+# for x11
+# xhost +local:docker
+
+# cd docker
+# docker build -t intel/ros2:ros2_grasp_library_deps-gpu .
+
+# docker run -dt --privileged --gpus all -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v /tmp/.docker.xauth:/tmp/.docker.xauth:rw -v /dev/bus/usb:/dev/bus/usb -v /dev:/dev:rw -e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY --name ros2_grasp_library intel/ros2:ros2_grasp_library_deps-gpu bash
+
+# docker exec -it ros2_grasp_library bash
